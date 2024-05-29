@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO API</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .content { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Todo API</h1>
+        <nav class="nav nav-pills nav-justified my-4">
+            <a class="nav-link" href="#" data-target="#createTodo">Create</a>
+            <a class="nav-link" href="#" data-target="#getTodo">Search</a>
+            <a class="nav-link" href="#" data-target="#udateTodo">Update</a>
+            <a class="nav-link" href="#" data-target="#deleteTodo">Delete</a>
+        </nav>
+
+        <!-- Create -->
+        <div id="createTodo" class="content">
+            <form id="createTaskForm">
+                <div class="form-group">
+                    <label for="todoTitle">Title</label>
+                    <input type="text" class="form-control" id="todoTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="todoContent">Content</label>
+                    <input type="text" class="form-control" id="todoContent" name="content" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+
+        <!-- Get -->
+        <div id="getTodo" class="content">
+            <dev id="todoList"></dev>
+            <form id="searchTaskForm">
+                <div class="form-group">
+                    <label for="searchTodoID">ID</label>
+                    <input type="number" class="form-control" id="searchTodoID" name="ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            <pre id="todoByID"></pre>
+        </div>
+
+        <!-- Update -->
+        <div id="udateTodo" class="content">
+            <form id="updateTaskForm">
+                <div class="form-group">
+                    <label for="updateTodoID">ID</label>
+                    <input type="number" class="form-control" id="updateTodoID" name="ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateTodoTitle">Title</label>
+                    <input type="text" class="form-control" id="updateTodoTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateTodoContent">Content</label>
+                    <input type="text" class="form-control" id="updateTodoContent" name="content" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+
+        </div>
+       
+
+        <!-- Delete -->
+        <div id="deleteTodo" class="content">
+            <form id="deleteTaskForm">
+                <div class="form-group">
+                    <label for="deleteTodoID">ID</label>
+                    <input type="number" class="form-control" id="deleteTodoID" name="ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Delete</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = link.getAttribute('data-target');
+                    document.querySelectorAll('.content').forEach(div => div.style.display = 'none');
+                    document.querySelector(target).style.display = 'block';
+                });
+            });
+
+            document.querySelector('.nav-link').click(); // Display the first section by default
+
+            async function fetchData(url, elementId) {
+                const response = await fetch(url);
+                const data = await response.json();
+                document.getElementById(elementId).innerHTML = JSON.stringify(data, null, 2);
+            }
+
+            async function postData(url, formData) {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(formData.entries()))
+                });
+                return response.json();
+            }
+
+            async function putData(url, formData) {
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(formData.entries()))
+                });
+                return response.json();
+            }
+
+            async function deleteData(url) {
+                const response = await fetch(url, {
+                    method: 'DELETE'
+                });
+                return response.json();
+            }
+
+            document.getElementById('createTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                await postData('http://localhost:8090/api/v1/todos', formData);
+                fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+            });
+
+            document.getElementById('searchTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = document.getElementById('searchTodoID').value;
+                const response = await fetch(`http://localhost:8090/api/v1/todos/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('todoByID').innerHTML = JSON.stringify(data, null, 2);
+                } else {
+                    document.getElementById('todoByID').innerText = 'Todo not found';
+                }
+            });
+
+            document.getElementById('updateTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = document.getElementById('updateTodoID').value;
+                const formData = new FormData(event.target);
+                await putData(`http://localhost:8090/api/v1/todos/${id}`, formData);
+                fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+            });
+
+            document.getElementById('deleteTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = document.getElementById('deleteTodoID').value;
+                await deleteData(`http://localhost:8090/api/v1/todos/${id}`);
+                fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+            });
+
+            // Initial data fetch
+            fetchData('http://localhost:8090/api/v1/todos', 'todoList'); */
+            document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = link.getAttribute('data-target');
+                    document.querySelectorAll('.content').forEach(div => div.style.display = 'none');
+                    document.querySelector(target).style.display = 'block';
+                });
+            });
+
+            document.querySelector('.nav-link').click(); // Display the first section by default
+
+            async function fetchData(url, elementId) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        document.getElementById(elementId).innerText = `Error: ${response.statusText}`;
+                        return;
+                    }
+                    const data = await response.json();
+                    document.getElementById(elementId).innerHTML = JSON.stringify(data, null, 2);
+                } catch (error) {
+                    document.getElementById(elementId).innerText = `Error: ${error.message}`;
+                }
+            }
+
+            async function postData(url, formData) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(formData.entries()))
+                    });
+                    return response.json();
+                } catch (error) {
+                    console.error(`Error: ${error.message}`);
+                }
+            }
+
+            async function putData(url, formData) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(formData.entries()))
+                    });
+                    return response.json();
+                } catch (error) {
+                    console.error(`Error: ${error.message}`);
+                }
+            }
+
+            async function deleteData(url) {
+                try {
+                    const response = await fetch(url, { method: 'DELETE' });
+                    return response.json();
+                } catch (error) {
+                    console.error(`Error: ${error.message}`);
+                }
+            }
+
+            document.getElementById('createTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                await postData('http://localhost:8090/api/v1/todos', formData);
+                fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+            });
+
+            document.getElementById('searchTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = document.getElementById('searchTodoID').value;
+                try {
+                    const response = await fetch(`http://localhost:8090/api/v1/todos/${id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById('todoByID').innerHTML = JSON.stringify(data, null, 2);
+                    } else {
+                        document.getElementById('todoByID').innerText = 'Todo not found';
+                    }
+                } catch (error) {
+                    document.getElementById('todoByID').innerText = `Error: ${error.message}`;
+                }
+            });
+
+            document.getElementById('updateTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = document.getElementById('updateTodoID').value;
+                const formData = new FormData(event.target);
+                try {
+                    const response = await putData(`http://localhost:8090/api/v1/todos/${id}`, formData);
+                    if (response.ok) {
+                        fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+                    } else {
+                        document.getElementById('todoByID').innerText = 'Update failed';
+                    }
+                } catch (error) {
+                    document.getElementById('todoByID').innerText = `Error: ${error.message}`;
+                }
+                //await putData(`http://localhost:8090/api/v1/todos/${id}`, formData);
+                //fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+            });
+
+            document.getElementById('deleteTaskForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = document.getElementById('deleteTodoID').value;
+                await deleteData(`http://localhost:8090/api/v1/todos/${id}`);
+                fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+            });
+
+            // Initial data fetch
+            fetchData('http://localhost:8090/api/v1/todos', 'todoList');
+        });
+    </script>
+</body>
+</html>
