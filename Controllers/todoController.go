@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	models "todoList/Models"
@@ -8,6 +9,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+func GetTodos(c *gin.Context) {
+	todos, err := models.GeTodos(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, todos)
+}
 
 func GetTodo(c *gin.Context) {
 	todoIDStr := c.Param("id")
@@ -43,6 +53,7 @@ func UpdateTodo(c *gin.Context) {
 	todoIDStr := c.Param("id")
 	todoID, err := strconv.Atoi(todoIDStr)
 	if err != nil {
+		fmt.Println(todoID, todoIDStr)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid Todo ID"})
 		return
 	}

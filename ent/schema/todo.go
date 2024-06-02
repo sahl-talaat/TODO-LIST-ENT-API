@@ -13,9 +13,8 @@ type Todo struct {
 // Fields of the Todo.
 func (Todo) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("tiltle").NotEmpty(),
+		field.String("title").NotEmpty(),
 		field.String("content").Optional(),
-		field.Bool("completed").Default(false),
 	}
 }
 
