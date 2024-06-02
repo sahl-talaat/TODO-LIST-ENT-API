@@ -6,6 +6,14 @@ import (
 	"todoList/ent"
 )
 
+func GeTodos(ctx context.Context) (todo []*ent.Todo, err error) {
+	todo, err = config.DB.Todo.Query().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return todo, nil
+}
+
 func GeTodo(ctx context.Context, id int) (todo *ent.Todo, err error) {
 	todo, err = config.DB.Todo.Get(ctx, id)
 	if err != nil {
@@ -15,7 +23,7 @@ func GeTodo(ctx context.Context, id int) (todo *ent.Todo, err error) {
 }
 
 func CreateTodo(ctx context.Context, todo *ent.Todo) (err error) {
-	_, err = config.DB.Todo.Create().SetTiltle(todo.Tiltle).SetContent(todo.Content).Save(ctx)
+	_, err = config.DB.Todo.Create().SetTitle(todo.Title).SetContent(todo.Content).Save(ctx)
 	if err != nil {
 		return err
 	}
@@ -23,7 +31,7 @@ func CreateTodo(ctx context.Context, todo *ent.Todo) (err error) {
 }
 
 func UpdateTodo(ctx context.Context, id int, todo *ent.Todo) (err error) {
-	_, err = config.DB.Todo.UpdateOneID(id).SetTiltle(todo.Tiltle).SetContent(todo.Content).SetCompleted(todo.Completed).Save(ctx)
+	_, err = config.DB.Todo.UpdateOneID(id).SetTitle(todo.Title).SetContent(todo.Content).Save(ctx)
 	if err != nil {
 		return err
 	}

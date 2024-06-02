@@ -22,6 +22,7 @@ func main() {
 	}
 
 	app := gin.Default()
+	app.GET("", func(c *gin.Context) { c.File("Public/index.html") })
 	routes.RegisterRoutes(app)
 
 	port := os.Getenv("SERVER_PORT")
