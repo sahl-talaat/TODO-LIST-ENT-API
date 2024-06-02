@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	models "todoList/Models"
+	config "todoList/Config"
 	"todoList/ent"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetTodos(c *gin.Context) {
-	todos, err := models.GeTodos(c)
+	todos, err := config.DB.Todo.Query().All(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -26,7 +26,7 @@ func GetTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid Todo ID"})
 		return
 	}
-	todo, err := models.GeTodo(c, todoID)
+	todo, err := config.DB.Todo.Get(c, todoID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -41,7 +41,7 @@ func CreateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, todo)
 		return
 	}
-	err = models.CreateTodo(c, &todo)
+	_, err = config.DB.Todo.Create().SetTitle(todo.Title).SetContent(todo.Content).Save(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -63,7 +63,7 @@ func UpdateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, todo)
 		return
 	}
-	err = models.UpdateTodo(c, todoID, &todo)
+	_, err = config.DB.Todo.UpdateOneID(todoID).SetTitle(todo.Title).SetContent(todo.Content).Save(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -77,7 +77,7 @@ func DeleteTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid Todo ID"})
 		return
 	}
-	err = models.DeleteTodo(c, todoID)
+	err = config.DB.Todo.DeleteOneID(todoID).Exec(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
