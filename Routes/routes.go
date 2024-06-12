@@ -11,6 +11,9 @@ func RegisterRoutes(r *gin.Engine) {
 
 	v1.POST("signin", controllers.SignIn)
 	v1.POST("signup", controllers.SignUp)
+	v1.POST("logout/:username", controllers.LogOut)
+	v1.PUT("users/:username", controllers.UpdateUser)
+	v1.DELETE("users/:username", controllers.DeleteUser)
 
 	v1.GET("todos/", controllers.GetTodos)
 	v1.POST("todos", controllers.CreateTodo)
