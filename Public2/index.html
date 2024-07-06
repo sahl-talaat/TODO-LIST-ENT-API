@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API</title>
+    <style>
+        body {
+    padding: 10px;
+}
+.container{
+    padding-top: 30px;
+    padding-bottom: 30px;
+    border-radius: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    font-weight: bold;
+    height: 50px;
+    background-color: rgb(124, 123, 120);
+}
+
+.item{
+    background-color: rgb(47, 51, 51);
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.item:hover{
+    background-color: rgb(59, 61, 61);
+}
+
+.item span {
+    color: white;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.body {
+    padding: 10px;
+    height: inherit;
+    display:flex;
+    padding: 15px;
+    border-radius: 9px;
+    background-color: rgb(124, 123, 120);
+}
+
+.list {
+    flex: 1;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.todo{
+    justify-content: baseline;
+    background-color: white;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 4px;
+}
+
+.title {
+    display: block;
+    color: black;
+    font-weight: bold;
+}
+
+.content {
+    display: block;
+    color: black;
+}
+
+.data {
+    flex: 1;
+    box-sizing: border-box;
+    display: flex;
+    margin-left: 10px;
+    margin-top: 5px;
+    height: 550px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.post-data,
+.put-data,
+.del-data {
+    display: block;
+    margin-bottom: 10px;
+    padding: 15px;
+    border: rgb(47, 51, 51) solid 1px;
+    border-radius: 4px;
+}
+
+.del-id,
+.post-title,
+.post-content,
+.put-id,
+.put-title,
+.put-content {
+    margin-top: 5px;
+    width: 100%;
+    padding: 10px;
+    height: 50px;
+    box-sizing: border-box;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="post item"><span>POST</span></div>
+        <div class="get item"><span>GET</span></div>
+        <div class="put item"><span>PUT</span></div>
+        <div class="del item"><span>DELETE</span></div>
+    </div>
+    <hr>
+    <div class="body">
+        <div class="list">
+        </div>
+        <div class="data">
+            <div class="del-data">  
+                <span>delete</span>
+                <input type="number" id="del-id" class="del-id" placeholder="Todo ID"></input>
+            </div>
+            <div class="post-data">  
+                <span>create</span>
+                <input type="text" id="post-title" class="post-title" placeholder="Todo Title"></input>
+                <input type="text" id="post-content" class="post-content" placeholder="Todo Content"></input>
+            </div>
+            <div class="put-data">
+                <span>update</span>
+                <input type="number" id="put-id" class="put-id" placeholder="Todo ID"></input>    
+                <input type="text" id="put-title" class="put-title" placeholder="Todo Title"></input>
+                <input type="text" id="put-content" class="put-content" placeholder="Todo Content"></input>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+
+
+
+let post = document.querySelector(".post");
+let get = document.querySelector(".get");
+
+let list = document.querySelector('.list')
+
+// 1. XMLHttpRequest
+    // is a built-in browser object that allows you to make HTTP requests. 
+    // It's more traditional and has been largely replaced by more modern approaches.
+
+/* get.addEventListener('click', () => {
+    // create new object
+    var xhr = new XMLHttpRequest();
+
+    // configure it: GET-request for the url
+    xhr.open('GET', 'http://localhost:8090/api/v1/todos', true)
+
+    // send the request over network
+    xhr.send()
+
+    // This will be called after the response is received
+    xhr.onload = function() {
+        if (xhr.status != 200){// analyze HTTP response status
+            alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
+          } else { // show the result
+            console.log(xhr.response)
+            //alert(`Done, got ${xhr.response.length} bytes`); // response is the server
+          }
+    }
+    xhr.onerror = function() {
+      alert("Request failed");
+    };
+}) */
+
+
+// 2. Fetch API
+    // The Fetch API provides a more modern and powerful way to make HTTP requests.
+    // It's promise-based and much easier to use than XMLHttpRequest.
+    
+// get request
+get.addEventListener('click', () => {
+    fetch('http://localhost:8090/api/v1/todos')
+    .then(response => {
+        if(!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data)
+        list.innerHTML = ""
+        data.forEach((element) => {
+            let todo = document.createElement('div')
+            let ttl = document.createElement('span')
+            let contt = document.createElement('span')
+            let ttlText = document.createTextNode(element.title)
+            let conttText = document.createTextNode(element.content)
+            ttl.appendChild(ttlText)
+            contt.appendChild(conttText)
+            todo.classList.add('todo')
+            ttl.classList.add('title')
+            contt.classList.add('content')
+            todo.appendChild(ttl)
+            todo.appendChild(contt)
+            list.appendChild(todo)
+        });
+    })
+    .catch(error => console.error('Error:', error))
+})
+
+// post requet
+post.addEventListener('click', () => {
+    const titleInput = document.getElementById('post-title');
+    const contentInput = document.getElementById('post-content');
+    const title = titleInput.value.trim();
+    const content = contentInput.value.trim();
+
+    if (title === "" || content === "") {
+        alert("To create an item, you must fill the two inputs in center.")
+    } else {
+        console.log(title, content);
+        fetch('http://localhost:8090/api/v1/todos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({title: title, content: content})
+        })
+        .then(async res => {
+            console.log(res);
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || 'Unknown error');
+            }
+            if (res.headers.get('Content-Length') === '0') {
+                return {}; // Return an empty object if the response is empty
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.log(data);
+            alert("Todo created successfully");
+            get.click();
+            titleInput.value = '';
+            contentInput.value = '';
+        })
+        .catch(error => {
+            console.error("Error creating todo:", error);
+            alert("Error creating todo");
+        });
+    }
+})
+
+// 3. Axios
+    // Axios is a promise-based HTTP client for the browser and Node.js.
+    // It provides a simple and clean API and supports older browsers.
+
+// Import axios (if using in Node.js or with a bundler)
+/* import axios from 'axios'
+
+// GET requst
+get.addEventListener('click', () => {
+    axios.get('http://localhost:8090/api/v1/todos')
+        .then(response => console.log(response.data))
+        .catch(error => console.error('Error:', error))
+})
+
+// POST request
+post.addEventListener('click', () => {
+    axios.post('http://localhost:8090/api/v1/todos', {
+        title: 'shshsh',
+        content: 'bebebebebe'
+    })
+    .then(response => console.log(response.data))
+    .catch(error => console.error('Error:', error))
+}) */
+
+// 4. JQuery.ajax
+    // jQuery provides a robust set of AJAX capabilities, which is useful if you're already using jQuery in your project.
+
+// GET Request
+/* get.addEventListener('click', () => {
+    $.ajax({
+        url: 'http://localhost:8090/api/v1/todos',
+        method: 'GET',
+        success: function(data) {
+            console.log(data)
+        },
+        error: function(error) {
+            console.error('Error:', error)
+        }
+    })
+})
+
+// POST Request
+post.addEventListener('click', () => {
+    $.ajax({
+        url: 'http://localhost:8090/api/v1/todos',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({title: 'jquery', content: 'cccccccccccccccc>>'}),
+        success: function(data) {
+            console.log(data);
+        },
+        error: function(error) {
+            console.error('Error:', error);
+        }
+    })
+}) */
+
+
+// 5. AJAX with Vanilla JS 
+    // Another way to perform AJAX requests using vanilla JavaScript is by using the Promise object with XMLHttpRequest.
+
+    // GET
+/* get.addEventListener('click', () => {
+    ajax('GET', 'http://localhost:8090/api/v1/todos')
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+})
+
+// POST
+post.addEventListener('click', () => {
+    ajax('POST', 'http://localhost:8090/api/v1/todos', JSON.stringify({ title: 'AJAX with Vanilla JS', content: 'zzzzzzz' }))
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+})
+function ajax(method, url, data) {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(xhr.response);
+            } else {
+                reject(new Error(xhr.statusText));
+            }
+        };
+        xhr.onerror = function() {
+            reject(new Error("Network Error"));
+        };
+        xhr.send(data);
+    });
+} */
+
+        let put = document.querySelector(".put");
+
+        put.addEventListener('click', () => {
+            const idInput = document.getElementById('put-id');
+            const titleInput = document.getElementById('put-title');
+            const contentInput = document.getElementById('put-content');
+            const id = idInput.value.trim();
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (id === "" || title === "" || content === "") {
+                alert("To update an item, you must fill the three fields in below.")
+            } else {
+                console.log(id, title, content);
+                fetch(`http://localhost:8090/api/v1/todos/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        title: title,
+                        content: content,
+                        userId: 0
+                    }),
+                    headers: { 
+                        "Content-type": "application/json; charset=UTF-8" 
+                    }
+                })
+                .then(async res => {
+                    console.log(res);
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(errorText || 'Unknown error');
+                    }
+                    if (res.headers.get('Content-Length') === '0') {
+                        return {}; // Return an empty object if the response is empty
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    alert("Todo updated successfully");
+                    get.click();
+                    idInput.value = '';
+                    titleInput.value = '';
+                    contentInput.value = '';
+                })
+                .catch(error => {
+                    console.error("Error updating todo:", error);
+                    alert("Error updating todo");
+                });
+            }
+        })
+        
+
+        let del = document.querySelector(".del");
+        del.addEventListener('click', () => {
+            const idInput = document.getElementById('del-id');
+            const id = idInput.value.trim();
+
+            if (id === "") {
+                alert("To delete an item, you must fill ID field.")
+            } else {
+                console.log(id)
+                fetch(`http://localhost:8090/api/v1/todos/${id}`, {
+                    method: 'DELETE',
+                    headers: { 
+                        "Content-type": "application/json; charset=UTF-8" 
+                    }
+                })
+                .then(async res => {
+                    console.log(res);
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(errorText || 'Unknown error');
+                    }
+                    if (res.headers.get('Content-Length') === '0') {
+                        return {}; // Return an empty object if the response is empty
+                    }
+                    return res.json();
+                })
+
+                .then(data => {
+                    console.log(data);
+                    alert("Todo deleted successfully");
+                    get.click();
+                    idInput.value = '';
+                })
+                .catch(error => {
+                    console.error("Error deleting todo:", error);
+                    alert("Error deleting todo");
+                });
+            }
+        })
+
+    </script>
+</body>
+</html>
